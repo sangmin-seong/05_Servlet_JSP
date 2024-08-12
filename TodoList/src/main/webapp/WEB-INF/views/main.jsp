@@ -46,8 +46,15 @@
         <tr>
           <th>${vs.count}</th>
           <td>
-          <a href= "#">${todo.title}</a href= "#">
+          <%-- 제목 클릭 시 
+            인덱스 번호를 이용하여 todoList의 
+            인덱스 번째 요소 내용을 조회하기
+            (쿼리스트링 이용 : ?K=V$K=V&....)
+           --%>
+            <a href= "/todo/detail?index=${vs.index}">${todo.title}</a href= "#">
           </td>
+
+          <%-- 완료 여부 --%>
           <th>
             <c:if test="${todo.complete}" > O </c:if>
             <c:if test="${not todo.complete}" > X </c:if>
