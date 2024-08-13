@@ -12,109 +12,106 @@ import java.util.List;
 
 import edu.kh.member.dto.Member;
 
+
+// MemberDao 인터페이스를 상속 받아 구현
 public class MemberDaoImpl implements MemberDao{
-private final String FILE_PATH = "MemberList.dat"; // tools에 이클립스 폴더
 	
+	// 회원 데이터가 저장될 파일 경로를 상수로 지정
+	private final String FILE_PATH = "membership_servlet.dat";
+	
+	// 회원 목록을 저장해둘 List 객체
 	private List<Member> memberList = null;
 	
-	private ObjectOutputStream	oos = null;
-	private ObjectInputStream	 ois = null;
+	// 스트림 객체 참조 변수
+	private ObjectInputStream  ois = null;
+	private ObjectOutputStream oos = null;
 	
 	
 	// 기본 생성자
-	public MemberDaoImpl() throws FileNotFoundException, IOException, ClassNotFoundException{
+	// - 회원 다수를 관리할 회원 목록(List)이 필요한데
+	//   이미 파일로 저장된 회원 목록이 있으면 읽어오고
+	//   없으면 새로 만들기
+	public MemberDaoImpl() throws FileNotFoundException, IOException, ClassNotFoundException {
 		
-		// TodoList.dat 파일이 없으면 새로운 List 생성, 있으면 읽어오기
+		// membership.dat 파일이 존재하는지 검사
 		File file = new File(FILE_PATH);
 		
-		if(!file.exists()) {
-			memberList = new ArrayList<Member>();
-			
-			memberList.add(new Member(1, "신짱구", "010-1234-1234", 0));
-			memberList.add(new Member(2, "신짱아", "010-5678-5678", 0));
-			memberList.add(new Member(3, "김철수", "010-2580-2580", 0));
-			
-			
-			
-		} else {
+		if( file.exists() ) { // 존재하는 경우
 			try {
-				// 객체 생성 시 외부 파일에 작성된 List<Todo> 객체를 입력 받아 todoList에 대입
-				ois = new ObjectInputStream(new FileInputStream(FILE_PATH));
+				// 스트림 생성
+				ois = new ObjectInputStream(new FileInputStream(FILE_PATH));  
+				
+				// 저장된 객체를 파일에서 읽어와 
+				// 다운 캐스팅하여 memberList가 참조하게함
 				memberList = (ArrayList<Member>)ois.readObject();
-			}finally {
+		
+			} finally {
+				// try에서 발생하는 예외를
+				// throws 구문으로 처리하면
+				// catch() 구문을 작성하지 않아도 된다!!
+				
 				if(ois != null) ois.close();
 			}
-		}
+		} 
 		
+		// 파일이 존재하지 않는 경우
+		else {
+			// 새로운 ArrayList를 만들어서 참조
+			memberList = new ArrayList<Member>();
+		}
 	}
-	//=--------------------------------------------------------------------------
 	
-	// MemberList 파일로 저장
+	
+	// memberList 반환
 	@Override
-	public void saveFile() throws FileNotFoundException, IOException {
+	public List<Member> getMemberList() {
+		return memberList;
+	}
+	
+	
+	// 회원 추가
+	@Override
+	public boolean addMember(Member member) throws IOException {
+		
+		// 1) 매개 변수로 전달 받은 새 회원 정보를
+		//    memberList에 추가
+		memberList.add(member);
+		
+		// 2) memberList를 지정된 파일로 출력(저장)
+		//   -> 현재 메서드 말고
+		//      다른 메서드에서도 파일 출력(저장) 기능이
+		//      자주 사용될 예정!!! 
+		//     --> saveFile() 메서드 만들어 호출
+		saveFile();
+		
+		return true; // 예외 발생하지 않고 성공적으로 파일에 저장됨
+	}
+	
+	
+	
+	@Override
+	public Member getMember(int index) {
+		return memberList.get(index);
+	}
+
+
+	// 파일 저장
+	@Override
+	public void saveFile() throws IOException {
+		
+		// memberList를 지정된 파일에 출력(저장)
 		
 		try {
 			oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH));
 			oos.writeObject(memberList);
-		}finally {
-			oos.close();
+		} finally {
+			if(oos != null) oos.close(); // flush() + 메모리 반환
 		}
 	}
 	
-	//-------------------------------------------------------------
-	// 회원목록 전체 조회 
-	@Override
-	public List<Member> memberListFullView() {
-		return memberList;
-	}
-	//-------------------------------------------------------------
-	// 회원 정보 조회
-	@Override
-	public Member memberDetailView(int index) {
-		if(index < 0 || index >= memberList.size()) return null;
-		return memberList.get(index);
-	}
-	//--------------------------------------------------------------
-	// 회원 추가
-		
-	@Override
-	public int memberAdd(Member member) throws FileNotFoundException, IOException {
-		
-		if(memberList.add(member)) {
-			saveFile();
-			return memberList.size()-1;
-		}
-		
-		return -1;
-	}
-	//----------------------------------------------------------------
-	// 회원 정보 수정
-	@Override
-	public boolean memberUpdate(int index, String name, String phone, int amount) throws FileNotFoundException, IOException {
-		
-		Member newMember = new Member();
-		
-		newMember.setName(name);
-		newMember.setPhone(phone);
-		newMember.setAmount(amount);
-		
-		if(memberList.set(index, newMember) != null) {
-			saveFile();
-			
-			return true;
-		}
-		return false;
-	}
-	//---------------------------------------------------------------
-	// 회원 정보 삭제
-	@Override
-	public Member memberDelete(int index) throws FileNotFoundException, IOException {
-		if(index < 0 || index >= memberList.size()) return null;
-		
-		Member deletedTarget = memberList.remove(index);
-		
-		saveFile();
-		
-		return deletedTarget;
-	}
+	
+	
+	
+	
+
 }

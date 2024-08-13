@@ -1,68 +1,46 @@
 package edu.kh.member.dao;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
 import edu.kh.member.dto.Member;
 
+// DAO(Data Access Object) : 
+// - 데이터가 저장된 곳(파일/DB)에 접근하는 역할의 객체
+// - 데이터 저장/수정/삭제/조회 가능
+
 public interface MemberDao {
+
+	// 인터페이스 메서드는 
+	// 묵시적(암묵적)으로 public abstract다!!
 	
 	/**
-	 * MemberList를 파일로 저장하는 메서드
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * DAO 객체가 가지고 있는 memberList 반환
+	 * @return memberList
 	 */
-	public void saveFile() throws FileNotFoundException, IOException;
+	List<Member> getMemberList();
 
+	
 	/**
-	 * 할 일 목록 반환
-	 * 
-	 * @return todoList
-	 */
-	List<Member> memberListFullView();
-
-	/**
-	 * 전달 받은 index 번째 member를 반환
-	 * 
-	 * @param index
-	 * @return index 번째 todo, 없으면 null
-	 */
-	Member memberDetailView(int index);
-
-	/**
-	 * 회원 추가
-	 * 
+	 * 회원 추가 
 	 * @param member
-	 * @return 추가된 index 번호 반환
-	 * @throws FileNotFoundException
+	 * @return true
 	 * @throws IOException
 	 */
-	int memberAdd(Member member) throws FileNotFoundException, IOException;
-
+	boolean addMember(Member member) throws IOException;
 	
-	/**
-	 * 회원정보 수정
-	 * 
+	
+	/** index 번째 회원 반환
 	 * @param index
-	 * @param title
-	 * @param detail
-	 * @return 성공 true, 실패 시 false
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @return member
 	 */
-	boolean memberUpdate(int index, String name, String phone, int amount) throws FileNotFoundException, IOException;
-
-	/**
-	 * 회원 삭제
-	 * 
-	 * @param index
-	 * @return 성공 시 삭제된 회원 반환 인덱스 범위 초과로 실패 시 null 반환
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	Member getMember(int index);
+	
+	
+	/** 
+	 * 파일 저장
 	 */
-	Member memberDelete(int index) throws FileNotFoundException, IOException;
+	void saveFile() throws IOException;
+	
+	
 }
-
-
