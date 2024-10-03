@@ -66,9 +66,9 @@
             <c:forEach items="${memberList}" var="member" varStatus = "vs">
               <tr>
                 <td>${vs.count}</td>
-                <td><a href="/update/member?index="+${vs.index}>${member.name}</a></td>
+                <td><a href="/update/member?index=${vs.index}">${member.name}</a></td>
                 <td>${member.phone}</td>
-                <td><a href="/update/amount?index="+${vs.index}>${member.amount}원</a></td>
+                <td><a href="/update/amount?index=${vs.index}">${member.amount}원</a></td>
                 <td>
                   <c:choose>
                      <c:when test="${member.grade} == 2>">"다이아"</c:when>
